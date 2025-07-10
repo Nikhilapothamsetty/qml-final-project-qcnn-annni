@@ -12,162 +12,128 @@ Quantum Machine Learning (QML) is a new way of using quantum computers to learn 
 
 This paper shows how we can use Quantum Convolutional Neural Networks (QCNNs) to study a difficult quantum system, even when we don’t have full information (called labels) about it. Usually, to train a model, you need lots of labeled data — like knowing exactly which "phase" a quantum state is in. But getting those labels is very hard in physics, especially when you’re trying to discover something new.
 
-So, the authors tried something clever:
-They trained their model using only the easy parts of the system (where we already know the answers), and then used that trained model to guess the rest of the phase diagram — even in the hard parts where we don’t know the answers. This is called **out-of-distribution generalization** — learning from known areas to predict unknown ones.
+So, the authors tried something clever:  
+They trained their model using only the easy parts of the system (where we already know the answers), and then used that trained model to guess the rest of the phase diagram — even in the hard parts where we don’t know the answers. This is called out-of-distribution generalization — learning from known areas to predict unknown ones.
 
 They tested this idea on a well-known but complex system called the ANNNI model (Axial Next-Nearest-Neighbor Ising model), which shows different phases:
 
-* **Ferromagnetic** (spins all aligned)
-* **Paramagnetic** (spins disordered)
-* **Antiphase** (spins alternate in a special 4-spin pattern)
+- Ferromagnetic (spins all aligned)
+- Paramagnetic (spins disordered)
+- Antiphase (spins alternate in a special 4-spin pattern)
 
-This model is useful because it shows **quantum frustration** — a kind of "tug-of-war" between different forces in the system.
+This model is useful because it shows quantum frustration — a kind of "tug-of-war" between different forces in the system.
 
 Using quantum computers, they created noisy versions of quantum data (like real-world measurements) and showed that their QML model could still figure out the whole phase diagram — even though it was trained only on a small part of it.
 
 ---
 
 ### 🌟 Main Takeaways:
-
-* Quantum machine learning can help us learn things that normal methods can’t, especially where exact math solutions don’t exist.
-* It needs very few training examples to make useful predictions.
-* This technique could help physicists discover new phases of matter and understand complicated quantum systems in the future.
+- Quantum machine learning can help us learn things that normal methods can’t, especially where exact math solutions don’t exist.
+- It needs very few training examples to make useful predictions.
+- This technique could help physicists discover new phases of matter and understand complicated quantum systems in the future.
 
 ---
 
 ### ⚙️ 1. Variational State Preparation using VQE
-
-**Objective**: Prepare ground states of the ANNNI Hamiltonian $H(\kappa, h)$ using the Variational Quantum Eigensolver (VQE).
-**Ansatz**: Hardware-efficient ansatz with Ry rotations and CNOTs in linear connectivity.
-**Depth**: $D = 6$ (for $N = 6$) and $D = 9$ (for $N = 12$).
-**Optimization**: Performed using the Adam optimizer (learning rate = 0.3) with parameter recycling to improve convergence.
-**Accuracy**: Ground state energy errors < 1% relative to exact diagonalization. Enhanced accuracy near the Peschel-Emery line.
-**Excited States**: VQE also used to compute excited states, confirming degeneracy only near phase boundaries.
+- **Objective**: Prepare ground states of the ANNNI Hamiltonian \( H(\kappa, h) \) using the Variational Quantum Eigensolver (VQE).
+- **Ansatz**: Hardware-efficient ansatz with \( R_y \) rotations and CNOTs in linear connectivity.
+- **Depth**: \( D = 6 \) (for \( N = 6 \)) and \( D = 9 \) (for \( N = 12 \)).
+- **Optimization**: Adam optimizer (learning rate = 0.3) with parameter recycling to improve convergence.
+- **Accuracy**: Ground state energy errors < 1% relative to exact diagonalization. Enhanced accuracy near the Peschel-Emery line.
+- **Excited States**: VQE also used to compute excited states, confirming degeneracy only near phase boundaries.
 
 ---
 
 ### 🧠 2. Quantum Convolutional Neural Network (QCNN)
+- **Inspired by**: Classical CNNs, adapted for NISQ quantum systems.
+- **Architecture**:
+  - Initial layer: \( R_y \) rotations.
+  - Repeating blocks: convolution → rotation → pooling.
+  - Final: fully connected gate → measurement.
+- **Goal**: Learn an observable \( O(\theta) \) that distinguishes between different quantum phases:
 
-**Inspired by**: Classical CNNs, adapted for NISQ quantum systems.
-**Architecture**:
+  \[
+  \langle \psi_A | O(\theta) | \psi_A \rangle < 0 < \langle \psi_B | O(\theta) | \psi_B \rangle
+  \]
 
-* Initial layer: Ry rotations.
-* Repeating blocks: convolution → rotation → pooling.
-* Final: fully connected gate → measurement.
-
-**Goal**: Learn an observable $O(\theta)$ that distinguishes between different quantum phases:
-
-$$
-\langle \psi_A | O(\theta) | \psi_A \rangle < 0 < \langle \psi_B | O(\theta) | \psi_B \rangle
-$$
-
-**Output**: Probability $p_j(\kappa, h)$ of the input state belonging to one of three phases:
-Ferromagnetic, Paramagnetic, Antiphase.
-Output state $|00\rangle$ interpreted as a “garbage class”.
+- **Output**: Probability \( p_j(\kappa, h) \) of the input state belonging to one of three phases: Ferromagnetic, Paramagnetic, Antiphase.
+- Output state \( |00\rangle \) interpreted as a “garbage class”.
 
 ---
 
 ### 📈 3. Generalization Ability
-
-**Key Contribution**: QCNN generalizes out-of-distribution, trained on limited labeled data near the axes ($\kappa = 0$, $h = 0$).
-**Justification**: High fidelity within-phase, low fidelity across phases.
-**Error Scaling**: Empirical results match theoretical bound $O(T/n)$, where:
-
-$$
-T = O[\log(N)]
-$$
-
-$n$: Training samples
+- **Key Contribution**: QCNN generalizes out-of-distribution, trained on limited labeled data near the axes \( \kappa = 0, h = 0 \).
+- **Justification**: High fidelity within-phase, low fidelity across phases.
+- **Error Scaling**: Empirical results match theoretical bound \( \mathcal{O}(T/n) \), where:
+  - \( T = \mathcal{O}[\log(N)] \): Number of QCNN parameters.
+  - \( n \): Training samples.
 
 ---
 
 ### 📊 4. Training Dataset
-
-**Training regions**:
-
-* $\kappa = 0$: Transverse field Ising model (integrable)
-* $h = 0$: Quasiclassical limit
-
-**Three training modes**:
-
-* **GC**: Gaussians near critical points: (0,1) and (0.5,0)
-* **G2**: Gaussians in the middle of each phase
-* **U**: Uniform random sampling
-
-**Loss Function**: Cross-entropy loss between predicted and one-hot encoded true phase labels.
+- **Training regions**:
+  - \( \kappa = 0 \): Transverse field Ising model (integrable).
+  - \( h = 0 \): Quasiclassical limit.
+- **Three training modes**:
+  - GC: Gaussians near critical points: (0,1) and (0.5,0)
+  - G2: Gaussians in the middle of each phase
+  - U: Uniform random sampling
+- **Loss Function**: Cross-entropy loss between predicted and one-hot encoded true phase labels.
 
 ---
 
 ### 📉 5. Results and Phase Classification
-
-**Systems tested**: $N = 6$ and $N = 12$ spins.
-**Output**: Phase diagrams successfully reconstructed from QCNN outputs trained on sparse data.
-
-**Findings**:
-
-* QCNN trained on simplified models generalizes to the full ANNNI diagram.
-* Anomaly scores and softmax probabilities clearly separate the 3 phases.
-* Training with Gaussian samples around phase centers (G2) yields the best performance.
+- **Systems tested**: \( N = 6 \) and \( N = 12 \) spins.
+- **Output**: Phase diagrams successfully reconstructed from QCNN outputs trained on sparse data.
+- **Findings**:
+  - QCNN trained on simplified models generalizes to the full ANNNI diagram.
+  - Anomaly scores and softmax probabilities clearly separate the 3 phases.
+  - Training with Gaussian samples around phase centers (G2) yields the best performance.
 
 ---
 
 ### 🧪 Results Breakdown
 
-**📊 Accuracy vs Number of Training Samples**
-Accuracy improves rapidly with increasing training points $n$, saturating for $n \geq 20$.
+#### 📊 Accuracy vs Number of Training Samples
+- Accuracy improves rapidly with increasing training points \( n \), saturating for \( n \geq 20 \).
+- Comparison across sampling schemes:
+  - GC (Gaussian near critical points): Blue
+  - G2 (Gaussian in middle of phases): Black
+  - U (Uniform sampling): Red
+- **Key finding**: Sampling away from the critical points (e.g., G2) is sufficient for accurate learning — location of samples matters less than previously thought.
 
-**Comparison across sampling schemes**:
-
-* GC (Gaussian near critical points): Blue
-* G2 (Gaussian in middle of phases): Black
-* U (Uniform sampling): Red
-
-**Key finding**: Sampling away from the critical points (e.g., G2) is sufficient for accurate learning — location of samples matters less than previously thought.
-
----
-
-### 🗺️ QCNN Phase Diagram (n = 40)
-
-Phase boundaries predicted by the QCNN match the ground truth well.
-
-* Color shades: Mixture of class probabilities predicted by the QCNN (blue, green, yellow).
-* Red lines: Predicted phase boundaries.
-
-**Output** is a soft classification, not hard labels — showing confidence across regions.
+#### 🗺️ QCNN Phase Diagram (\( n = 40 \))
+- Phase boundaries predicted by the QCNN match the ground truth well.
+- Color shades: Mixture of class probabilities predicted by the QCNN (blue, green, yellow).
+- Red lines: Predicted phase boundaries.
+- Output is a soft classification, not hard labels — showing confidence across regions.
 
 ---
 
 ### 🤖 Autoencoder Comparison (Anomaly Detection - AD)
-
-Trained using a single product state ($|\psi\rangle$, marked as a red cross).
-
-* AD reconstructs well if the test state is similar (same phase), but poorly if it's far in Hilbert space (different phase).
-* Color map shows the compression loss (higher means anomaly).
-
-While qualitative structure is captured, AD:
-
-* Lacks precision in identifying phase boundaries.
-* Fails for some initial states (e.g., paramagnetic), showing instability.
-* Cannot give confidence like QCNN softmax outputs.
+- Trained using a single product state (\( |\psi\rangle \), marked as a red cross).
+- AD reconstructs well if the test state is similar (same phase), but poorly if it's far in Hilbert space (different phase).
+- Color map shows the compression loss (higher means anomaly).
+- While qualitative structure is captured, AD:
+  - Lacks precision in identifying phase boundaries.
+  - Fails for some initial states (e.g., paramagnetic), showing instability.
+  - Cannot give confidence like QCNN softmax outputs.
 
 ---
 
 ### ✅ Conclusions
+- QCNNs can compute phase diagrams of non-integrable quantum systems by training only on simplified integrable regions.
+- Demonstrated >97% accuracy using only 20 labeled training points.
+- Generalization is strong and efficient, even from non-i.i.d. data.
+- Training near critical points is not essential — a key insight for real-world physics data.
+- QCNNs outperform unsupervised methods like AD in:
+  - Quantitative predictions
+  - Stability
+  - Generalization
+- **Limitation**: Supervised QCNN cannot detect phases absent in the training set (e.g., BKT transition, PE line).
+- AD can help qualitatively, but lacks QCNN's accuracy.
+- This work opens a pathway for practical QML applications in quantum physics by reducing the need for labeled data.
 
-* QCNNs can compute phase diagrams of non-integrable quantum systems by training only on simplified integrable regions.
-* Demonstrated >97% accuracy using only 20 labeled training points.
-* Generalization is strong and efficient, even from non-i.i.d. data.
-* Training near critical points is not essential — a key insight for real-world physics data.
-* QCNNs outperform unsupervised methods like AD in:
-
-  * Quantitative predictions
-  * Stability
-  * Generalization
-
-**Limitation**: Supervised QCNN cannot detect phases absent in the training set (e.g., BKT transition, PE line).
-**AD** can help qualitatively, but lacks QCNN's accuracy.
-
-This work opens a pathway for practical QML applications in quantum physics by reducing data dependence.
 
 
 

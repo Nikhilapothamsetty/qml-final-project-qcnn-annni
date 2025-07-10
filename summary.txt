@@ -132,7 +132,7 @@ Using quantum computers, they created noisy versions of quantum data (like real-
   - Generalization
 - **Limitation**: Supervised QCNN cannot detect phases absent in the training set (e.g., BKT transition, PE line).
 - AD can help qualitatively, but lacks QCNN's accuracy.
-- This work opens a pathway for practical QML applications in quantum physics by reducing the need for labeled data.
+- This work opens a pathway for practical QML applications in quantum physics by reducing the need for large labeled datasets.
 
 
 

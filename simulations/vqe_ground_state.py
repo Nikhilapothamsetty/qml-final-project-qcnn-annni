@@ -44,7 +44,7 @@ def layered_ansatz(n_qubits, depth):  # Make a layered quantum circuit with tuna
 
     return qc, params  # Return circuit and angles
 
-if __name__ == "__main__":  # Only run this if script is called directly
+if __name__ == "__main__":  
     n = 6  # Number of qubits
     depth = 3  # Number of ansatz layers
     kappa = 0.5  # Next-nearest neighbor interaction strength

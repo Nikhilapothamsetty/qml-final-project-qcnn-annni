@@ -8,7 +8,7 @@ from qiskit.utils import QuantumInstance  # Runs the circuit on the simulator
 def build_annni_hamiltonian(n_qubits, kappa=0.5, h=1.0): # Makes the Hamiltonian (energy rules) for ANNNI model
     terms = []  # Start with an empty list of rules
 
-    for i in range(n_qubits - 1):  # Loop through neighbor qubits
+    for i in range(n_qubits - 1):  # Loop through neighbour qubits
         pauli_str = ["I"] * n_qubits  # Start with identity gates
         pauli_str[i] = "Z"  # Put Z on qubit i
         pauli_str[i + 1] = "Z"  # Put Z on qubit i+1

@@ -18,7 +18,7 @@ def build_annni_hamiltonian(n_qubits, kappa=0.5, h=1.0): # Creates the ANNNI Ham
         pauli_str = ["I"] * n_qubits  # Start with all identities (do nothing)
         pauli_str[i] = "Z"  # Add a Z on one qubit
         pauli_str[i + 2] = "Z"  # Add another Z two steps ahead
-        terms.append(kappa * PauliOp.from_label("".join(pauli_str))) .
+        terms.append(kappa * PauliOp.from_label("".join(pauli_str))) 
 
     for i in range(n_qubits):  # Loop through each qubit
         pauli_str = ["I"] * n_qubits

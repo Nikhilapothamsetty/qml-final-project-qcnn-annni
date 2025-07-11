@@ -1,11 +1,11 @@
-from qiskit import Aer  # Use a pretend quantum computer (simulator)
-from qiskit.circuit import QuantumCircuit, ParameterVector  # Make a quantum circuit and symbols for angles
-from qiskit.opflow import PauliOp  # Build math blocks like Z and X
-from qiskit.algorithms import VQE  # Use a smart guesser to find energy
-from qiskit.algorithms.optimizers import COBYLA  # Use a helper that guesses better each time
-from qiskit.utils import QuantumInstance  # Set up the pretend machine with rules
+from qiskit import Aer  # Use a pretend quantum computer 
+from qiskit.circuit import QuantumCircuit, ParameterVector # To make quantum circuits with angles
+from qiskit.opflow import PauliOp  # To write energy terms using Z and X
+from qiskit.algorithms import VQE  # To guess the lowest energy
+from qiskit.algorithms.optimizers import COBYLA   # Helps VQE guess better
+from qiskit.utils import QuantumInstance # Runs our circuit on the simulator
 
-def build_annni_hamiltonian(n_qubits, kappa=0.5, h=1.0):  # Make the rulebook for the quantum system
+def build_annni_hamiltonian(n_qubits, kappa=0.5, h=1.0): # Makes the Hamiltonian (energy rules) for ANNNI model
     terms = []  # Start with an empty list of rules
 
     for i in range(n_qubits - 1):  # Loop through neighbor qubits
@@ -28,8 +28,8 @@ def build_annni_hamiltonian(n_qubits, kappa=0.5, h=1.0):  # Make the rulebook fo
     return sum(terms).reduce()  # Combine all rules into one and simplify
 
 def layered_ansatz(n_qubits, depth):  # Make a layered quantum circuit with tunable angles
-    qc = QuantumCircuit(n_qubits)  # Start with a blank circuit
-    params = ParameterVector("θ", length=n_qubits * depth * 2)  # Create angle knobs
+    qc = QuantumCircuit(n_qubits)  # Start with a blank circuit with n_qubits
+    params = ParameterVector("θ", length=n_qubits * depth * 2)  # Make a list of angle knobs for all rotations
     idx = 0  # Start at first angle
 
     for d in range(depth):  # Repeat layers

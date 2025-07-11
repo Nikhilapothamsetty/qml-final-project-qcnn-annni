@@ -14,7 +14,7 @@ def build_annni_hamiltonian(n_qubits, kappa=0.5, h=1.0): # Makes the Hamiltonian
         pauli_str[i + 1] = "Z"  # Put Z on qubit i+1
         terms.append(PauliOp.from_label("".join(pauli_str)))  # Add this ZZ rule
 
-       for i in range(n_qubits - 2):  # Look at qubits that are 2 spots apart
+    for i in range(n_qubits - 2):  # Look at qubits that are 2 spots apart
         pauli_str = ["I"] * n_qubits  # Start with all identities (do nothing)
         pauli_str[i] = "Z"  # Add a Z on one qubit
         pauli_str[i + 2] = "Z"  # Add another Z two steps ahead

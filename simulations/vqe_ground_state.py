@@ -59,8 +59,10 @@ if __name__ == "__main__":
     optimizer = COBYLA(maxiter=250)  # Set the optimizer with max 250 tries
     vqe = VQE(ansatz=ansatz, optimizer=optimizer, quantum_instance=qinst)  # Prepare the VQE solver
     result = vqe.compute_minimum_eigenvalue(operator=H)  # Run VQE to get energy
+    energy = result.eigenvalue.real  # Get the real part of the result (ignore imaginary part)
+    print("Estimated ground state energy:", round(energy, 6)) # Print the estimated ground state energy
 
-    print(f"{result.eigenvalue.real:.6f}")  # Print the estimated ground state energy
+  
 
 
 

@@ -1,9 +1,9 @@
-from qiskit import Aer  # Use a pretend quantum computer 
-from qiskit.circuit import QuantumCircuit, ParameterVector # To make quantum circuits with angles
-from qiskit.opflow import PauliOp  # To write energy terms using Z and X
-from qiskit.algorithms import VQE  # To guess the lowest energy
-from qiskit.algorithms.optimizers import COBYLA   # Helps VQE guess better
-from qiskit.utils import QuantumInstance # Runs our circuit on the simulator
+from qiskit import Aer  #Pretend to run the quantum circuit on a fake computer
+from qiskit.circuit import QuantumCircuit, ParameterVector  # Make circuits and angle dials
+from qiskit.opflow import PauliOp  # Write energy rules using Z and X
+from qiskit.algorithms import VQE  # Tool to guess the lowest energy
+from qiskit.algorithms.optimizers import COBYLA  # Helps VQE find the best guess
+from qiskit.utils import QuantumInstance  # Runs the circuit on the simulator
 
 def build_annni_hamiltonian(n_qubits, kappa=0.5, h=1.0): # Makes the Hamiltonian (energy rules) for ANNNI model
     terms = []  # Start with an empty list of rules

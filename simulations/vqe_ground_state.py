@@ -51,6 +51,6 @@ if __name__ == "__main__":
     optimizer = COBYLA(maxiter=250)
     vqe = VQE(ansatz=ansatz, optimizer=optimizer, quantum_instance=qinst)
 
-    result = vqe.calculate_minimum_eigenvalue(operator=hamiltonian)
+    result = vqe.compute_minimum_eigenvalue(operator=hamiltonian)
     energy = result.eigenvalue.real
     print("estimated ground state energy:", round(energy, 6))

@@ -49,7 +49,7 @@ if __name__ == "__main__":
     qinst = QuantumInstance(backend, seed_simulator=123, seed_transpiler=123, shots=1024)
 
     optimizer = COBYLA(maxiter=250)
-    vqe = VQE(ansatz=ansatz, optimizer=optimizer, quantum_instance=qinst)## Initialize the Variational Quantum Eigensolver with the chosen ansatz, optimizer, and simulation backend
+    vqe = VQE(ansatz=ansatz, optimizer=optimizer, quantum_instance=qinst)
 
     result = vqe.compute_minimum_eigenvalue(operator=hamiltonian)
     energy = result.eigenvalue.real

@@ -5,7 +5,7 @@ from qiskit.circuit.library import EfficientSU2
 from qiskit.algorithms import VQE
 from qiskit.algorithms.optimizers import COBYLA
 
-def build_annni_hamiltonian(n_qubits, kappa=0.5, h=1.0):
+def construct_annni_hamiltonian(n_qubits, kappa=0.5, h=1.0):
     terms = []
 
     for i in range(n_qubits - 1):
@@ -41,7 +41,7 @@ if __name__ == "__main__":
     kappa = 0.5
     h = 1.0
 
-    hamiltonian = build_annni_hamiltonian(n, kappa, h)
+    hamiltonian = construct_annni_hamiltonian(n, kappa, h)
 
     ansatz = EfficientSU2(n, entanglement='linear', reps=depth)
 

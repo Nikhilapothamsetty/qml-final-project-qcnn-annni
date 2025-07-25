@@ -1,3 +1,5 @@
+Report: Understanding Quantum Phases Using QCNN and VQE
+
 Scientists want to understand how quantum systems change — like knowing when water turns to ice. But they often don’t have enough labeled data to teach a machine to find these changes.
 
 This study shows that with a special type of quantum AI (called QCNN), we don’t need a lot of labeled data. By training only on a few easy examples, the AI was still able to figure out the full picture — even the tricky parts no one labeled before.

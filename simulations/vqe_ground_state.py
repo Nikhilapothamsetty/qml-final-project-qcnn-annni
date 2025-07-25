@@ -6,23 +6,22 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
 def generate_data(n_samples=60):
-    data = []
-    labels = []
+    circuits, labels = [], []
     for i in range(n_samples):
         label = i % 3
         qc = QuantumCircuit(3)
         if label == 0:
-            qc.ry(np.pi/4, 0)
+            qc.ry(np.pi / 4, 0)
         elif label == 1:
-            qc.ry(np.pi/2, 1)
+            qc.ry(np.pi / 2, 1)
             qc.cx(1, 2)
         else:
-            qc.ry(3*np.pi/4, 0)
+            qc.ry(3 * np.pi / 4, 0)
             qc.cx(0, 1)
             qc.cx(1, 2)
-        data.append(qc)
+        circuits.append(qc)
         labels.append(label)
-    return data, np.array(labels)
+    return circuits, np.array(labels)
 
 def create_qcnn(params):
     qc = QuantumCircuit(3)
@@ -41,66 +40,53 @@ def create_qcnn(params):
     qc.measure_all()
     return qc
 
-def predict(qc_template, params):
+def evaluate_model(X, y, weights):
+    predictions = []
     backend = Aer.get_backend('qasm_simulator')
-    result = execute(qc_template, backend=backend, shots=1024).result()
-    counts = result.get_counts()
-    prediction = max(counts, key=counts.get)
-    return prediction
+    for x in X:
+        qc = x.compose(create_qcnn(weights))
+        qc.measure_all()
+        counts = execute(qc, backend=backend, shots=1024).result().get_counts()
+        output_bit = max(counts, key=counts.get)
+        pred = int(output_bit[-1])
+        predictions.append(pred)
+    return accuracy_score(y, predictions)
 
-def objective(params, X, y_true):
-    y_pred = []
-    for i, qc_data in enumerate(X):
-        full_circuit = qc_data.compose(create_qcnn(params))
-        full_circuit.measure_all()
-        backend = Aer.get_backend('qasm_simulator')
-        result = execute(full_circuit, backend=backend, shots=1024).result()
-        counts = result.get_counts()
-        guess = max(counts, key=counts.get)
-        pred_class = int(guess[-1])
-        y_pred.append(pred_class)
-    return 1 - accuracy_score(y_true, y_pred)
+def cost_function(params, X, y):
+    return 1 - evaluate_model(X, y, params)
 
 X, y = generate_data(60)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-params = 2 * np.pi * np.random.rand(10)
+initial_params = 2 * np.pi * np.random.rand(10)
 optimizer = SPSA(maxiter=20)
 opt_params, _, _ = optimizer.optimize(
-    num_vars=len(params),
-    objective_function=lambda p: objective(p, X_train, y_train),
-    initial_point=params
+    num_vars=len(initial_params),
+    objective_function=lambda p: cost_function(p, X_train, y_train),
+    initial_point=initial_params
 )
 
-def evaluate(X, y, params):
-    y_pred = []
-    for qc in X:
-        full_circuit = qc.compose(create_qcnn(params))
-        full_circuit.measure_all()
-        result = execute(full_circuit, Aer.get_backend('qasm_simulator'), shots=1024).result()
-        counts = result.get_counts()
-        guess = max(counts, key=counts.get)
-        pred_class = int(guess[-1])
-        y_pred.append(pred_class)
-    return accuracy_score(y, y_pred)
+train_accuracy = evaluate_model(X_train, y_train, opt_params)
+test_accuracy = evaluate_model(X_test, y_test, opt_params)
 
-train_acc = evaluate(X_train, y_train, opt_params)
-test_acc = evaluate(X_test, y_test, opt_params)
+print(f"{train_accuracy * 100:.2f}")
+print(f"{test_accuracy * 100:.2f}")
 
-print(f"{train_acc * 100:.2f}")
-print(f"{test_acc * 100:.2f}")
+# 🔵 MODIFIED VISUALIZATION BLOCK 🔵
+random_scores = []
+for shift in np.linspace(-0.2, 0.2, 20):
+    shifted = opt_params + shift * np.random.randn(10)
+    score = evaluate_model(X_test, y_test, shifted)
+    random_scores.append(score)
 
-accuracies = [evaluate(X_train, y_train, params)]
-for i in range(20):
-    new_params = params + 0.1 * np.random.randn(10)
-    acc = evaluate(X_train, y_train, new_params)
-    accuracies.append(acc)
-
-plt.plot(accuracies)
-plt.title("QCNN Accuracy Over Random Trials")
+plt.plot(range(len(random_scores)), random_scores, marker='o', color='navy')
+plt.title("Test Accuracy with Parameter Variations")
 plt.xlabel("Trial")
 plt.ylabel("Accuracy")
-plt.grid()
+plt.ylim(0, 1)
+plt.grid(True)
+plt.tight_layout()
 plt.show()
+
 
 

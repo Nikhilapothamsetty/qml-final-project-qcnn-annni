@@ -1,4 +1,4 @@
-Report: Understanding Quantum Phases Using QCNN and VQE
+# 🧠 Quantum Convolutional Neural Networks for ANNNI Model – Phase Discovery via QML
 
 Scientists want to understand how quantum systems change — like knowing when water turns to ice. But they often don’t have enough labeled data to teach a machine to find these changes.
 

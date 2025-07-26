@@ -7,7 +7,7 @@ It tries to tell which phase the system is in by checking the value of a setting
 
 ## 📜 Overview 
 
-We created a small 4-qubit quantum system using a physics model called ANNNI. For different values of a setting called kappa (κ), we:
+I created a small 4-qubit quantum system using a physics model called ANNNI. For different values of a setting called kappa (κ), we:
 
 Find the system’s most stable state (called the ground state),
 
@@ -178,8 +178,8 @@ def classify_parity(statevec, circuit):
 * For each bitstring:
 
   * Count how many `1`s it contains.
-  * If the number is **even**, add its probability to total.
-  * If **odd**, subtract it.
+  * If the number is **even** add its probability to total.
+  * If **odd** then  subtract it.
 
 ```python
     return 0 if total >= 0 else 1

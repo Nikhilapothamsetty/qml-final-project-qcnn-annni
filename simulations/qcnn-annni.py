@@ -24,7 +24,6 @@ def annni_hamiltonian(n=4, J=1.0, g=0.5, kappa=0.5):
         H += -kappa * term
     return H.to_matrix().real
 
-# Get ground state of a given Hamiltonian
 def get_ground_state(H):
     eigvals, eigvecs = eigh(H)
     return eigvals[0], eigvecs[:, 0]

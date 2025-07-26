@@ -267,7 +267,7 @@ The predictions made by the QCNN classifier on the 5 ground states corresponding
 | 0.8     | 1          | 1               |
 | 0.3     | 0          | 0               |
 
-🎯 **Final QCNN Classification Accuracy: 100.00%**
+ **Final QCNN Classification Accuracy: 100.00%**
 
 
 

@@ -1,19 +1,19 @@
 # 🧠 QCNN Phase Classification on ANNNI Model (Qiskit)
 
-This project implements a simplified **Quantum Convolutional Neural Network (QCNN)** using [Qiskit](https://qiskit.org/) to classify the quantum ground states of the **Axial Next-Nearest-Neighbor Ising (ANNNI)** model.
-The goal is to predict the phase of the system based on the value of a physical parameter `κ (kappa)`.
+This project implements a simplified **Quantum Convolutional Neural Network (QCNN)** using [Qiskit](https://qiskit.org/) to classify the quantum ground states of the **Axial Next-Nearest-Neighbor Ising (ANNNI)** model.  
+The goal is to predict  **phase of the system** based on the value of a physical parameter `κ (kappa)`.
 
 ---
 
 ## 📜 Overview
 
-We simulate a 4-qubit quantum system using the ANNNI Hamiltonian. For different κ values, we:
+We simulate a 4-qubit quantum system described by the ANNNI Hamiltonian. For different values of `κ`, we:
 
-* Compute the ground state using exact diagonalization,
-* Use a shallow QCNN-like circuit to classify the parity of the state,
-* Predict whether κ lies below or above a threshold (here, 0.6) — a **binary phase classification task**.
+- Compute the ground state using exact diagonalization,
+- Use a shallow QCNN-like circuit to classify the parity of the state,
+- Predict whether `κ` lies **below or above a threshold (0.6)** — a **binary classification** representing two different quantum phases.
 
-The QCNN is untrained (i.e., parameters are randomly initialized) and acts as a proof-of-concept.
+This QCNN is **untrained** (random parameters) and is meant to serve as a **proof-of-concept**.
 
 ---
 
@@ -28,14 +28,16 @@ from qiskit.quantum_info import Statevector
 from qiskit.opflow import I, X, Z
 from scipy.linalg import eigh
 from sklearn.metrics import accuracy_score
-```
+````
 
-These libraries are used to:
+These imports allow us to:
 
-* Construct the quantum Hamiltonian (`I, X, Z` from `qiskit.opflow`),
-* Simulate quantum circuits and states (`Statevector`, `QuantumCircuit`),
-* Compute ground states via matrix diagonalization (`eigh` from `scipy`),
-* Evaluate performance (`accuracy_score` from `sklearn`).
+* `numpy`: Handle numerical operations and generate random numbers.
+* `qiskit.QuantumCircuit`: Create quantum circuits.
+* `qiskit.quantum_info.Statevector`: Simulate quantum states.
+* `qiskit.opflow.I, X, Z`: Define operators for building Hamiltonians.
+* `scipy.linalg.eigh`: Diagonalize matrices to get eigenvalues/eigenvectors.
+* `sklearn.metrics.accuracy_score`: Evaluate how well our classifier performs.
 
 ---
 
@@ -45,20 +47,51 @@ These libraries are used to:
 def annni_hamiltonian(n=4, J=1.0, g=0.5, kappa=0.5):
 ```
 
-Defines the Hamiltonian for the ANNNI model with:
+Defines the ANNNI model Hamiltonian with:
 
-* `n`: number of qubits
-* `J`: nearest-neighbor interaction strength
-* `g`: transverse field
-* `kappa`: next-nearest-neighbor interaction strength
+* `n`: Number of qubits
+* `J`: Nearest-neighbor interaction strength
+* `g`: Transverse magnetic field strength
+* `kappa`: Next-nearest-neighbor interaction strength
 
-It includes 3 terms:
+The Hamiltonian has **three types of terms**:
 
-1. Nearest-neighbor Z-Z coupling
-2. Local X field
-3. Next-nearest-neighbor Z-Z coupling
+1. Z-Z coupling between neighboring qubits
+2. A transverse magnetic field on each qubit (X terms)
+3. Z-Z coupling between next-nearest neighbors
 
-Returns a **real-valued matrix** representation of the Hamiltonian.
+```python
+    H = 0 * (I ^ n)
+```
+
+Start with a zero Hamiltonian as a placeholder. `I ^ n` creates an identity operator on all qubits.
+
+```python
+    for i in range(n - 1):
+        H += -J * (Z ^ i) @ (Z ^ (i + 1)) ^ (I ^ (n - i - 2))
+```
+
+Adds **nearest-neighbor Z-Z interactions** between each pair of adjacent qubits.
+
+```python
+    for i in range(n):
+        H += -g * (I ^ i) @ X ^ (I ^ (n - i - 1))
+```
+
+Adds a **transverse field (X term)** on each individual qubit.
+
+```python
+    for i in range(n - 2):
+        H += -kappa * (Z ^ i) @ (Z ^ (i + 2)) ^ (I ^ (n - i - 3))
+```
+
+Adds **next-nearest-neighbor Z-Z interactions**, controlled by `kappa`.
+
+```python
+    return H.to_matrix()
+```
+
+Converts the Hamiltonian to a matrix so we can diagonalize it later.
 
 ---
 
@@ -70,7 +103,8 @@ def get_ground_state(H):
     return eigvals[0], eigvecs[:, 0]
 ```
 
-Uses **exact diagonalization** to compute the **lowest energy eigenstate** (ground state) of the Hamiltonian.
+* Uses **exact diagonalization** (`eigh`) to find all eigenvalues and eigenvectors.
+* Returns the **ground state energy** and corresponding eigenvector (the lowest energy state).
 
 ---
 
@@ -78,15 +112,39 @@ Uses **exact diagonalization** to compute the **lowest energy eigenstate** (grou
 
 ```python
 def build_qcnn(params, n_qubits=4):
+    qc = QuantumCircuit(n_qubits)
 ```
 
-Builds a simple variational quantum circuit with:
+Creates a new quantum circuit with 4 qubits.
 
-* **Entanglement layer**: Controlled-X gates (CX)
-* **Rotation layer**: Parameterized `Ry` and `Rz` on each qubit
-* **Pooling layer**: Controlled-Z (CZ) gates
+```python
+    for i in range(n_qubits - 1):
+        qc.cx(i, i + 1)
+```
 
-This mimics the convolution → activation → pooling structure of a classical CNN.
+Adds **entanglement** between adjacent qubits using **CNOT (CX)** gates.
+
+```python
+    for i in range(n_qubits):
+        qc.ry(params[i], i)
+        qc.rz(params[i + 4], i)
+```
+
+Applies learnable **Ry and Rz rotations**. These act like weights in classical neural networks.
+We use 8 parameters total: 4 for Ry, 4 for Rz.
+
+```python
+    for i in range(0, n_qubits - 1, 2):
+        qc.cz(i, i + 1)
+```
+
+Adds **pooling** using Controlled-Z (CZ) gates between alternate qubit pairs.
+
+```python
+    return qc
+```
+
+Returns the final quantum circuit.
 
 ---
 
@@ -94,13 +152,37 @@ This mimics the convolution → activation → pooling structure of a classical 
 
 ```python
 def classify_parity(statevec, circuit):
+    evolved = statevec.evolve(circuit)
+    probs = evolved.probabilities_dict()
 ```
 
-* Evolves a quantum state using the QCNN circuit.
-* Measures probabilities of all basis states.
-* If the number of 1s in the bitstring is **even**, predicts class `0`; otherwise, class `1`.
+* Applies the QCNN circuit to the ground state.
+* Gets a dictionary of measurement outcomes and their probabilities.
 
-Used here as a binary classifier (e.g., whether κ < 0.6 or not).
+```python
+    total = 0
+    for bitstring, prob in probs.items():
+        ones = bitstring.count('1')
+        if ones % 2 == 0:
+            total += prob
+        else:
+            total -= prob
+```
+
+* For each bitstring:
+
+  * Count how many `1`s it contains.
+  * If the number is **even**, add its probability to total.
+  * If **odd**, subtract it.
+
+```python
+    return 0 if total >= 0 else 1
+```
+
+* Final decision:
+
+  * If even-parity dominates → return **0**
+  * If odd-parity dominates → return **1**
 
 ---
 
@@ -111,16 +193,24 @@ kappas = [0.1, 0.5, 1.2, 0.8, 0.3]
 true_labels = [0 if k < 0.6 else 1 for k in kappas]
 ```
 
-Defines the input κ values and corresponding **true phase labels** (0 or 1).
+We want to classify the system as:
+
+* **Class 0**: κ < 0.6
+* **Class 1**: κ ≥ 0.6
 
 ```python
+ground_states = []
 for k in kappas:
     H = annni_hamiltonian(kappa=k)
     _, psi0 = get_ground_state(H)
     ground_states.append(Statevector(psi0))
 ```
 
-For each κ, compute the ground state and convert it into a `Statevector`.
+* For each κ:
+
+  * Generate the Hamiltonian
+  * Find the ground state
+  * Convert to `Statevector` and store
 
 ---
 
@@ -130,19 +220,19 @@ For each κ, compute the ground state and convert it into a `Statevector`.
 params = 2 * np.pi * np.random.rand(8)
 ```
 
-Randomly initialize 8 circuit parameters.
+Initialize 8 random rotation angles between 0 and 2π.
 
 ```python
-for idx, sv in enumerate(ground_states):
+preds = []
+for sv in ground_states:
     circuit = build_qcnn(params)
     pred = classify_parity(sv, circuit)
+    preds.append(pred)
 ```
 
-For each state:
-
-* Build the QCNN,
-* Classify it using the parity logic,
-* Compare predicted vs. true label.
+* Build the QCNN with these parameters
+* Apply it to each ground state
+* Store the predicted class (0 or 1)
 
 ---
 
@@ -153,7 +243,10 @@ acc = accuracy_score(true_labels, preds)
 print(f"Final QCNN Classification Accuracy: {acc * 100:.2f}%")
 ```
 
-Computes and prints the model accuracy.
+* Compare predictions with true labels
+* Print the final **accuracy**
 
 ---
+
+
 

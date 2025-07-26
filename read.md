@@ -1,11 +1,11 @@
-# 🧠 QCNN Phase Classification on ANNNI Model (Qiskit)
+#  QCNN Phase Classification on ANNNI Model (Qiskit)
 
 This project uses a simple quantum circuit to study how a quantum system behaves.
 It tries to tell which phase the system is in by checking the value of a setting called kappa (κ).
 
 ---
 
-## 📜 Overview 
+##  Overview 
 
 I created a small 4-qubit quantum system using a physics model called ANNNI. For different values of a setting called kappa (κ) we:
 
@@ -19,7 +19,7 @@ Our QCNN isn’t trained — it just uses random values. This project is like a 
 
 ---
 
-## 🧩 Code explanation 
+##  Code explanation 
 
 ### 1. **Imports**
 

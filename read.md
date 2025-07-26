@@ -7,19 +7,19 @@ It tries to tell which phase the system is in by checking the value of a setting
 
 ## 📜 Overview 
 
-I created a small 4-qubit quantum system using a physics model called ANNNI. For different values of a setting called kappa (κ), we:
+I created a small 4-qubit quantum system using a physics model called ANNNI. For different values of a setting called kappa (κ) we:
 
 Find the system’s most stable state (called the ground state),
 
 Use a basic quantum neural network (QCNN) to look at that state,
 
-Predict if κ is less than or greater than 0.6, which tells us which phase the system is in.
+Predict if κ is less than or greater than 0.6 which tells us which phase the system is in.
 
 Our QCNN isn’t trained — it just uses random values. This project is like a demo to show that even this simple setup can still give useful result
 
 ---
 
-## 🧩 Code Breakdown
+## 🧩 Code explanation 
 
 ### 1. **Imports**
 
@@ -78,27 +78,27 @@ Start with a zero Hamiltonian as a placeholder. `I ^ n` creates an identity oper
         H += -J * (Z ^ i) @ (Z ^ (i + 1)) ^ (I ^ (n - i - 2))
 ```
 
-Adds **nearest-neighbor Z-Z interactions** between each pair of adjacent qubits.
+Adds **nearest-neighbor Z-Z interactions** btw each pair of adjacent qubits.
 
 ```python
     for i in range(n):
         H += -g * (I ^ i) @ X ^ (I ^ (n - i - 1))
 ```
 
-Adds a **transverse field (X term)** on each individual qubit.
+Adds  **transverse field (X term)** on each individual qubit.
 
 ```python
     for i in range(n - 2):
         H += -kappa * (Z ^ i) @ (Z ^ (i + 2)) ^ (I ^ (n - i - 3))
 ```
 
-Adds **next-nearest-neighbor Z-Z interactions**, controlled by `kappa`.
+Adds **next-nearest-neighbor Z-Z interactions** controlled by `kappa`.
 
 ```python
     return H.to_matrix()
 ```
 
-Converts the Hamiltonian to a matrix so we can diagonalize it later.
+Converts the Hamiltonian to  matrix so we can diagonalize it later.
 
 ---
 
@@ -109,7 +109,7 @@ def get_ground_state(H):
     eigvals, eigvecs = eigh(H)
     return eigvals[0], eigvecs[:, 0]
 ```
-We use eigh to break down the Hamiltonian and find its energy levels and quantum states.
+we use eigh to break down the Hamiltonian and find its energy levels and quantum states.
 Then we return the lowest energy value and its corresponding state which is called the ground state — the most stable configuration of the system.
 
 ---
@@ -137,7 +137,7 @@ Adds **entanglement** between adjacent qubits using **CNOT (CX)** gates.
 ```
 
 Applies learnable **Ry and Rz rotations**. These act like weights in classical neural networks.
-We use 8 parameters total: 4 for Ry, 4 for Rz.
+We use 8 parameters total: 4 for Ry, 4 for Rz
 
 ```python
     for i in range(0, n_qubits - 1, 2):

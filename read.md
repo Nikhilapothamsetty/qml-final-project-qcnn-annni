@@ -44,7 +44,7 @@ I, X, Z – These are basic quantum operators used to build the system’s physi
 
 eigh – Finds the energy levels and states of our quantum system.
 
-accuracy_score – Checks how accurate our predictions are by comparing them to the correct answers.
+accuracy\_score – Checks how accurate our predictions are by comparing them to the correct answers.
 
 ---
 
@@ -109,6 +109,7 @@ def get_ground_state(H):
     eigvals, eigvecs = eigh(H)
     return eigvals[0], eigvecs[:, 0]
 ```
+
 we use eigh to break down the Hamiltonian and find its energy levels and quantum states.
 Then we return the lowest energy value and its corresponding state which is called the ground state — the most stable configuration of the system.
 
@@ -253,6 +254,23 @@ print(f"Final QCNN Classification Accuracy: {acc * 100:.2f}%")
 * Print the final **accuracy**
 
 ---
+
+##  Results
+
+The predictions made by the QCNN classifier on the 5 ground states corresponding to different κ values were:
+
+| κ Value | True Class | Predicted Class |
+| ------- | ---------- | --------------- |
+| 0.1     | 0          | 0               |
+| 0.5     | 0          | 0               |
+| 1.2     | 1          | 1               |
+| 0.8     | 1          | 1               |
+| 0.3     | 0          | 0               |
+
+🎯 **Final QCNN Classification Accuracy: 100.00%**
+
+
+
 
 
 

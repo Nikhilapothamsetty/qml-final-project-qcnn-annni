@@ -1,19 +1,21 @@
 # 🧠 QCNN Phase Classification on ANNNI Model (Qiskit)
 
-This project implements a simplified **Quantum Convolutional Neural Network (QCNN)** using [Qiskit](https://qiskit.org/) to classify the quantum ground states of the **Axial Next-Nearest-Neighbor Ising (ANNNI)** model.  
-The goal is to predict  **phase of the system** based on the value of a physical parameter `κ (kappa)`.
+This project uses a simple quantum circuit to study how a quantum system behaves.
+It tries to tell which phase the system is in by checking the value of a setting called kappa (κ).
 
 ---
 
-## 📜 Overview
+## 📜 Overview 
 
-We simulate a 4-qubit quantum system described by the ANNNI Hamiltonian. For different values of `κ`, we:
+We created a small 4-qubit quantum system using a physics model called ANNNI. For different values of a setting called kappa (κ), we:
 
-- Compute the ground state using exact diagonalization,
-- Use a shallow QCNN-like circuit to classify the parity of the state,
-- Predict whether `κ` lies **below or above a threshold (0.6)** — a **binary classification** representing two different quantum phases.
+Find the system’s most stable state (called the ground state),
 
-This QCNN is **untrained** (random parameters) and is meant to serve as a **proof-of-concept**.
+Use a basic quantum neural network (QCNN) to look at that state,
+
+Predict if κ is less than or greater than 0.6, which tells us which phase the system is in.
+
+Our QCNN isn’t trained — it just uses random values. This project is like a demo to show that even this simple setup can still give useful result
 
 ---
 
@@ -30,14 +32,19 @@ from scipy.linalg import eigh
 from sklearn.metrics import accuracy_score
 ````
 
-These imports allow us to:
+These tools help us build and run our quantum model:
 
-* `numpy`: Handle numerical operations and generate random numbers.
-* `qiskit.QuantumCircuit`: Create quantum circuits.
-* `qiskit.quantum_info.Statevector`: Simulate quantum states.
-* `qiskit.opflow.I, X, Z`: Define operators for building Hamiltonians.
-* `scipy.linalg.eigh`: Diagonalize matrices to get eigenvalues/eigenvectors.
-* `sklearn.metrics.accuracy_score`: Evaluate how well our classifier performs.
+numpy – For math operations and making random numbers.
+
+QuantumCircuit – Lets us design quantum circuits (like building blocks for quantum computers).
+
+Statevector – Helps us simulate the behavior of quantum states.
+
+I, X, Z – These are basic quantum operators used to build the system’s physics (called the Hamiltonian).
+
+eigh – Finds the energy levels and states of our quantum system.
+
+accuracy_score – Checks how accurate our predictions are by comparing them to the correct answers.
 
 ---
 

@@ -109,9 +109,8 @@ def get_ground_state(H):
     eigvals, eigvecs = eigh(H)
     return eigvals[0], eigvecs[:, 0]
 ```
-
-* Uses **exact diagonalization** (`eigh`) to find all eigenvalues and eigenvectors.
-* Returns the **ground state energy** and corresponding eigenvector (the lowest energy state).
+We use eigh to break down the Hamiltonian and find its energy levels and quantum states.
+Then we return the lowest energy value and its corresponding state which is called the ground state — the most stable configuration of the system.
 
 ---
 

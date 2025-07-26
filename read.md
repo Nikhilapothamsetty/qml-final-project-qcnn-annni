@@ -1,10 +1,10 @@
 # 🧠 Quantum Convolutional Neural Networks for ANNNI Model 
 
-Scientists want to understand how quantum systems change — like knowing when water turns to ice. But they often don’t have enough labeled data to teach a machine to find these changes.
+Scientists want to understand how quantum systems change  like knowing when water turns to ice. But they  don’t have enough labeled data to teach a machine to find these changes.
 
-This study shows that with a special type of quantum AI (called QCNN), we don’t need a lot of labeled data. By training only on a few easy examples, the AI was still able to figure out the full picture — even the tricky parts no one labeled before.
+This study shows that with a special type of quantum AI (called QCNN) we don’t need a lot of labeled data. By training only on a few easy examples, the AI was still able to figure out the full picture  even the tricky parts no one labeled before.
 
-They tested this on a system called the ANNNI model, which has three types of phases (like solid, liquid, gas — but for quantum stuff), and the AI guessed them all correctly.
+They tested this on a system called the ANNNI model, which has three types of phases (like solid, liquid, gas but for quantum stuff), and the AI guessed them all correctly.
 
 This means quantum AI might help us discover new physics — just by learning from small, known pieces.
 
@@ -13,8 +13,7 @@ Quantum machine learning (QML) is a new area that combines quantum computers and
 Quantum Machine Learning (QML) is a new way of using quantum computers to learn patterns — just like how normal machine learning works on classical computers. But in QML, we work with special data that comes from quantum systems.
 
 This paper shows how we can use Quantum Convolutional Neural Networks (QCNNs) to study a difficult quantum system, even when we don’t have full information (called labels) about it. Usually, to train a model, you need lots of labeled data — like knowing exactly which "phase" a quantum state is in. But getting those labels is very hard in physics, especially when you’re trying to discover something new.
-
-So, the authors tried something clever:  
+ 
 They trained their model using only the easy parts of the system (where we already know the answers), and then used that trained model to guess the rest of the phase diagram — even in the hard parts where we don’t know the answers. This is called out-of-distribution generalization — learning from known areas to predict unknown ones.
 
 They tested this idea on a well-known but complex system called the ANNNI model (Axial Next-Nearest-Neighbor Ising model), which shows different phases:
@@ -36,9 +35,9 @@ This code simplifies the approach from the paper to suit a minimal proof-of-conc
 - Ground states are computed via exact diagonalization (`eigh`), not VQE.
 - Only κ (kappa) is varied while h is kept fixed.
 - The QCNN is implemented as a shallow 8-parameter variational circuit with simple rotation and entangling layers.
-- The classification task is binary (`kappa < 0.6` or `≥ 0.6`), instead of full multi-phase detection.
+- The classification task is binary (`kappa < 0.6` or `≥ 0.6`) instead of full multi-phase detection.
 
-These choices make the setup suitable for quick experimentation and insight on phase classification using quantum circuits, aligned with the original paper’s spirit.
+These choices make the setup suitable for quick experimentation and insight on phase classification using quantum circuits, aligned with the original paper.
 
 ---
 
@@ -52,7 +51,6 @@ These choices make the setup suitable for quick experimentation and insight on p
 
 ## ⚙️ 1. Variational State Preparation using VQE
 
-> *(Note: This part is mentioned in the original paper, but your code uses `eigh` instead of VQE)*
 
 - Objective: Prepare ground states of the ANNNI Hamiltonian \( H(\kappa, h) \) using the Variational Quantum Eigensolver (VQE).
 - Ansatz: Hardware-efficient ansatz with R_y rotations and CNOTs in linear connectivity.
@@ -155,8 +153,8 @@ Sampling away from the critical points (e.g., G2) is sufficient for accurate lea
 
 **Limitations:**
 - Lacks precision in identifying phase boundaries.
-- Fails for some initial states (e.g., paramagnetic), showing instability.
-- Cannot give confidence like QCNN softmax outputs.
+- Fails for some initial states (like paramagnetic) showing instability.
+- Can't give confidence like QCNN softmax outputs.
 
 ---
 
